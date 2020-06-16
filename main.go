@@ -85,8 +85,7 @@ func startJob() *v1.Job {
 					Name:   "bash-job",
 				},
 				Spec: corev1.PodSpec{
-					RestartPolicy:      corev1.RestartPolicyNever,
-					ServiceAccountName: "bash-job",
+					RestartPolicy: corev1.RestartPolicyNever,
 					Containers: []corev1.Container{{
 						Image:           "bash-job",
 						Name:            "main",

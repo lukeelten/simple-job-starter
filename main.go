@@ -75,9 +75,10 @@ func startJob(cmd string, args []string) *v1.Job {
 			Labels: labels,
 		},
 		Spec: v1.JobSpec{
-			Parallelism:  intp(1),
-			Completions:  intp(1),
-			BackoffLimit: intp(1),
+			Parallelism:             intp(1),
+			Completions:             intp(1),
+			BackoffLimit:            intp(1),
+			TTLSecondsAfterFinished: intp(120),
 			Template: corev1.PodTemplateSpec{
 				ObjectMeta: metav1.ObjectMeta{
 					Labels: labels,

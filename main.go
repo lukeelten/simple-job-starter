@@ -39,7 +39,7 @@ func main() {
 
 	r := gin.Default()
 	r.GET("/start", func(c *gin.Context) {
-		job := startJob()
+		job := startJob("/start.sh")
 		c.JSON(200, job)
 	})
 
@@ -49,7 +49,22 @@ func main() {
 		if err != nil {
 			panic(err)
 		}
-		job := startJob(args...)
+		job := startJob("/start.sh", args...)
+		c.JSON(200, job)
+	})
+
+	r.GET("/stop", func(c *gin.Context) {
+		job := startJob("/stop.sh")
+		c.JSON(200, job)
+	})
+
+	r.POST("/stop", func(c *gin.Context) {
+		args := make([]string, 0)
+		err := c.BindJSON(&args)
+		if err != nil {
+			panic(err)
+		}
+		job := startJob("/stop.sh", args...)
 		c.JSON(200, job)
 	})
 
@@ -68,9 +83,9 @@ func main() {
 	r.Run()
 }
 
-func startJob(args ...string) *v1.Job {
+func startJob(cmd string, args ...string) *v1.Job {
 	now := time.Now()
-	name := fmt.Sprintf("bash-job-%d-%d-%d-%d-%d-%d", now.Year(), now.Month(), now.Day(), now.Hour(), now.Minute(), now.Second())
+	name := fmt.Sprintf("bash-job-%d", now.UTC().Unix())
 	labels := make(map[string]string, 0)
 	labels["app"] = "bash-job"
 
@@ -93,6 +108,7 @@ func startJob(args ...string) *v1.Job {
 					Containers: []corev1.Container{{
 						Image:           "bash-job",
 						Name:            "main",
+						Command:         []string{cmd},
 						Args:            args,
 						ImagePullPolicy: corev1.PullAlways,
 					}},

@@ -39,32 +39,12 @@ func main() {
 
 	r := gin.Default()
 	r.GET("/start", func(c *gin.Context) {
-		job := startJob("/start.sh")
-		c.JSON(200, job)
-	})
-
-	r.POST("/start", func(c *gin.Context) {
-		args := make([]string, 0)
-		err := c.BindJSON(&args)
-		if err != nil {
-			panic(err)
-		}
-		job := startJob("/start.sh", args...)
+		job := startJob("/start.sh", c.QueryArray("args"))
 		c.JSON(200, job)
 	})
 
 	r.GET("/stop", func(c *gin.Context) {
-		job := startJob("/stop.sh")
-		c.JSON(200, job)
-	})
-
-	r.POST("/stop", func(c *gin.Context) {
-		args := make([]string, 0)
-		err := c.BindJSON(&args)
-		if err != nil {
-			panic(err)
-		}
-		job := startJob("/stop.sh", args...)
+		job := startJob("/stop.sh", c.QueryArray("args"))
 		c.JSON(200, job)
 	})
 
@@ -83,7 +63,7 @@ func main() {
 	r.Run()
 }
 
-func startJob(cmd string, args ...string) *v1.Job {
+func startJob(cmd string, args []string) *v1.Job {
 	now := time.Now()
 	name := fmt.Sprintf("bash-job-%d", now.UTC().Unix())
 	labels := make(map[string]string, 0)

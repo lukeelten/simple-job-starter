@@ -1,10 +1,10 @@
-FROM golang:1.20 as builder
+FROM registry.access.redhat.com/ubi9/go-toolset:1.18 as builder
 
 WORKDIR /app
 COPY . .
 RUN go build -o bash-job-starter . 
 
-FROM centos:7
+FROM registry.access.redhat.com/ubi9/ubi:latest
 
 WORKDIR /
 COPY --from=builder /app/bash-job-starter .

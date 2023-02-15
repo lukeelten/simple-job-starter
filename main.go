@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"io/ioutil"
 	"time"
@@ -49,7 +50,7 @@ func main() {
 	})
 
 	r.GET("/status", func(c *gin.Context) {
-		list, err := client.BatchV1().Jobs(namespace).List(metav1.ListOptions{
+		list, err := client.BatchV1().Jobs(namespace).List(context.Background(), metav1.ListOptions{
 			LabelSelector: "app=bash-job",
 		})
 
@@ -98,7 +99,7 @@ func startJob(cmd string, args []string) *v1.Job {
 		},
 	}
 
-	jobRet, err := client.BatchV1().Jobs(namespace).Create(&job)
+	jobRet, err := client.BatchV1().Jobs(namespace).Create(context.Background(), &job, metav1.CreateOptions{})
 	if err != nil {
 		panic(err)
 	}
